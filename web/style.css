@@ -1,0 +1,766 @@
+/* ===== Shared website styles ===== */
+@import url("https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500&family=Cormorant+Garamond:wght@500;600&display=swap");
+/* ===== Biến màu & font (đổi ở đây là đổi cả trang) ===== */
+:root {
+  --bg: #f4f6f7;
+  --ink: #14202b;
+  --muted: #5d6b77;
+  --gold: #b8975a;
+  --ruby: #8e1f3a;
+  --line: #dde3e7;
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --sans: "Be Vietnam Pro", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ===== Header ===== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 5%;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.logo {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: .95rem;
+}
+
+.nav a:hover, .nav a.active {
+  color: var(--gold);
+}
+
+.btn-small {
+  background: var(--ink);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 999px;
+}
+
+.nav .btn-small:hover {
+  background: var(--gold);
+  color: #fff;
+}
+
+.menu-btn {
+  display: none;
+  background: none;
+  border: 0;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+/* ===== Banner ===== */
+.banner {
+  position: relative;
+  height: 70vh;
+  min-height: 380px;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 8%;
+  opacity: 0;
+  transition: opacity .8s;
+  color: #fff;
+}
+
+.slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.s1 {
+  background: linear-gradient(120deg, #14202b, #2c4457);
+}
+
+.slide-text {
+  max-width: 520px;
+}
+
+.slide h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  line-height: 1.05;
+  font-weight: 600;
+}
+
+.slide p {
+  margin: 16px 0 28px;
+  opacity: .9;
+}
+
+/* ===== Section chung ===== */
+.section {
+  padding: 64px 5% 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section h2 {
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+/* ===== Sản phẩm ===== */
+.products {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.thumb {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  background: #e9edf0;
+  color: var(--gold);
+}
+
+.thumb svg {
+  width: 45%;
+  height: 45%;
+}
+
+.card-body {
+  padding: 14px 16px 18px;
+}
+
+.card h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.price {
+  color: var(--ruby);
+  font-weight: 500;
+  margin: 4px 0 12px;
+}
+
+.add {
+  width: 100%;
+  padding: 10px;
+  background: var(--ink);
+  color: #fff;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.add:hover {
+  background: var(--gold);
+}
+
+/* ===== Footer ===== */
+.footer {
+  background: var(--ink);
+  color: #c9d1d7;
+  text-align: center;
+  padding: 28px 5%;
+  font-size: .9rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 860px) {
+  .menu-btn {
+    display: block;
+  }
+  .nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 5%;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav.open {
+    display: flex;
+  }
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* ===== Hộp đăng nhập/đăng ký ===== */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background: rgba(20, 32, 43, .68);
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease, visibility .25s ease;
+}
+
+.auth-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.auth-modal {
+  position: relative;
+  width: min(100%, 490px);
+  max-height: min(92vh, 900px);
+  overflow-y: auto;
+  padding: 34px 42px 28px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 80px rgba(12, 24, 34, .3);
+  text-align: center;
+  transform: translateY(12px);
+  transition: transform .25s ease;
+}
+
+.auth-overlay.show .auth-modal {
+  transform: translateY(0);
+}
+
+.auth-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.auth-close:hover {
+  color: var(--gold);
+}
+
+.auth-eyebrow {
+  color: #9b7b42;
+  font-size: .7rem;
+  letter-spacing: .28em;
+  font-weight: 500;
+}
+
+.auth-modal h2 {
+  margin: 4px 0 5px;
+  font-family: var(--serif);
+  font-size: clamp(2rem, 5vw, 2.6rem);
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+
+.auth-tab {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 11px 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: .9rem;
+}
+
+.auth-form {
+  text-align: left;
+}
+
+.auth-form[hidden] {
+  display: none;
+}
+
+.auth-field {
+  margin-bottom: 13px;
+}
+
+.auth-field label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-size: .79rem;
+  font-weight: 500;
+}
+
+.auth-field input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fbfcfd;
+  color: var(--ink);
+  font: inherit;
+  font-size: .86rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.auth-field input::placeholder {
+  color: #9aa4ac;
+}
+
+.auth-field input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184, 151, 90, .14);
+}
+
+.auth-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 18px;
+  padding: 13px 18px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: #fff;
+  font: inherit;
+  font-size: .9rem;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .2s;
+}
+
+.auth-submit span {
+  font-size: 1.15rem;
+  color: #e0c58e;
+}
+
+.auth-submit:hover {
+  background: #263d4f;
+  border-color: #263d4f;
+  transform: translateY(-1px);
+}
+
+.auth-message {
+  min-height: 20px;
+  margin-top: 12px;
+  text-align: center;
+  font-size: .8rem;
+}
+
+@media (max-width: 520px) {
+  .auth-overlay {
+    padding: 10px;
+  }
+  .auth-modal {
+    padding: 30px 22px 22px;
+    max-height: 95vh;
+  }
+  .auth-modal h2 {
+    font-size: 2rem;
+  }
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* thuộc tính hidden luôn ẩn thật sự */
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn-small {
+  border: 0;
+  display: inline-block;
+}
+
+.btn-small[disabled], .add[disabled] {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+main.section {
+  padding-bottom: 64px;
+  min-height: 60vh;
+}
+
+/* ----- Ô nhập liệu, bảng ----- */
+input, select, textarea {
+  padding: 8px 10px;
+  /* đệm trong */
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font: inherit;
+  background: #fff;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  margin: 12px 0 24px;
+  font-size: .9rem;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid var(--line);
+  text-align: left;
+}
+
+th {
+  background: #e9edf0;
+}
+
+td button {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 4px;
+}
+
+td button:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ----- Khung form ----- */
+.box {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.box label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.box input:not([type=radio]), .box select, .box textarea {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  /* xếp các con nằm ngang */
+  flex-wrap: wrap;
+  /* hết chỗ thì xuống dòng */
+  align-items: center;
+  /* canh giữa theo trục dọc */
+  gap: 10px;
+  /* khoảng cách giữa các con */
+}
+
+.row input, .row select {
+  width: auto !important;
+}
+
+.filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+/* ----- Phân trang ----- */
+.pager {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 28px 0 0;
+}
+
+.pager a {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.pager a.on {
+  background: var(--ink);
+  color: #fff;
+}
+
+/* ----- Ảnh sản phẩm & trang chi tiết ----- */
+.thumb {
+  font-size: 3rem;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.detail .thumb {
+  width: 320px;
+  max-width: 100%;
+}
+
+/* ----- Trang admin ----- */
+.admin {
+  display: flex;
+  min-height: 70vh;
+}
+
+/* menu bên trái + nội dung bên phải */
+.side {
+  width: 220px;
+  padding: 20px;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  /* xếp nút theo chiều dọc */
+  gap: 8px;
+}
+
+.side button {
+  text-align: left;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #c9d1d7;
+}
+
+.side button:hover, .side button.on {
+  background: var(--gold);
+  color: #fff;
+}
+
+#main {
+  flex: 1;
+  padding: 28px;
+  overflow-x: auto;
+}
+
+#main h2 {
+  font-family: var(--serif);
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.admin-login {
+  margin: 80px auto;
+}
+
+.admin-login .auth-form {
+  margin-top: 16px;
+}
+
+@media (max-width: 860px) {
+  .admin {
+    flex-direction: column;
+  }
+  .side {
+    width: 100%;
+  }
+}
+
+/* ----- Nút chuyển Cửa hàng <-> Quản trị ----- */
+.btn-switch {
+  padding: 8px 18px;
+  border: 1px solid var(--ink);
+  /* viền xanh than */
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+}
+
+.btn-switch:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+}
+
+/* ===== Ẩn / hiện theo trạng thái (JS chỉ đổi thuộc tính data-... trên <body>) ===== */
+body[data-mode="shop"] [data-only="admin"],
+/* đang ở cửa hàng -> ẩn khu quản trị */
+body[data-mode="admin"] [data-only="shop"],
+/* đang ở quản trị -> ẩn cửa hàng */
+body[data-login="in"] [data-only="guest"],
+/* đã đăng nhập -> ẩn nút Đăng nhập / Đăng ký */
+body[data-login="out"] [data-only="user"],
+/* chưa đăng nhập -> ẩn tên khách, đăng xuất */
+body[data-admin="in"] [data-only="adminout"],
+/* admin đã đăng nhập -> ẩn form đăng nhập admin */
+body[data-admin="out"] [data-only="adminin"] {
+  /* admin chưa đăng nhập -> ẩn khung quản trị */
+  display: none;
+}
+
+.nav-group {
+  display: contents;
+}
+
+/* nhóm menu không tạo thêm khung, các con vẫn xếp theo .nav */
+/* ===== Mỗi màn hình (.view) chỉ hiện khi có class "on" ===== */
+.view {
+  display: none;
+}
+
+.view.on {
+  display: block;
+}
+
+/* ===== Các kiểu nhỏ (trước đây viết trong JS) ===== */
+.banner-small {
+  height: 40vh;
+  min-height: 260px;
+}
+
+/* banner trang chủ thấp hơn bản gốc */
+.title-gap {
+  margin-top: 40px;
+}
+
+.qty-input {
+  width: 80px;
+}
+
+.thumb span {
+  font-size: 3rem;
+}
+
+/* biểu tượng 💍 khi chưa có hình */
+/* ===== Thanh toán: ô địa chỉ mới chỉ hiện khi chọn "Nhập địa chỉ mới" ===== */
+#newAddr {
+  display: none;
+}
+
+#checkoutForm[data-addr="new"] #newAddr {
+  display: block;
+}
+
+/* ===== Hộp đăng nhập / đăng ký: chọn form theo tab ===== */
+#authBox[data-tab="login"] #regForm,
+#authBox[data-tab="register"] #loginForm {
+  display: none;
+}
+
+#authBox[data-tab="login"] #tabLogin,
+#authBox[data-tab="register"] #tabReg {
+  /* tab đang chọn */
+  border-bottom-color: var(--gold);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.auth-message[data-state="error"] {
+  color: #a33131;
+}
+
+.auth-message[data-state="success"] {
+  color: #267144;
+}
+
+/* ===== Thông báo nổi (chữ nằm trong index.html, JS chỉ bật/tắt) ===== */
+.toast {
+  position: fixed;
+  /* cố định trên màn hình */
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  /* canh giữa theo chiều ngang */
+  z-index: 2000;
+  max-width: 90%;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 8px 30px rgba(12, 24, 34, .3);
+}
+
+/* ===== Form nhỏ nằm ngay trong 1 ô của bảng (sửa tên loại, sửa % lợi nhuận) ===== */
+.row-form {
+  display: flex;
+  /* ô nhập + nút nằm cùng hàng */
+  align-items: center;
+  /* canh giữa theo trục dọc */
+  gap: 6px;
+  /* khoảng cách giữa các con */
+}
+
+.row-form input:not([type=hidden]):not(.qty-input) {
+  min-width: 140px;
+}
+

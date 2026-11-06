@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lumière - Quản trị</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-mode="admin" data-login="out" data-admin="out">
+<header class="header">
+  <a href="index.html" class="logo">Lumière</a>
+  <nav class="nav"><a class="btn-switch" href="index.html">← Về cửa hàng</a></nav>
+</header>
+
+<!-- ===================== QUẢN TRỊ ===================== -->
+<div id="adminWrap" data-only="admin">
+
+  <!-- Đăng nhập admin (riêng với khách hàng) -->
+  <section class="auth-modal admin-login" id="loginBox" data-only="adminout">
+    <p class="auth-eyebrow">LUMIÈRE · QUẢN TRỊ</p>
+    <h2>Đăng nhập admin</h2>
+    <form class="auth-form" data-submit="adminLogin">
+      <div class="auth-field"><label>Tên đăng nhập</label><input name="user" required></div>
+      <div class="auth-field"><label>Mật khẩu</label><input name="pass" type="password" required></div>
+      <button class="auth-submit" type="submit">Đăng nhập <span>→</span></button>
+      <p class="auth-message" id="aerr"></p>
+    </form>
+  </section>
+
+  <!-- Khung quản trị: menu chức năng bên trái + nội dung bên phải -->
+  <div class="admin" id="panel" data-only="adminin">
+    <aside class="side">
+      <button data-act="go" data-arg="users">Khách hàng</button>
+      <button data-act="go" data-arg="types">Loại sản phẩm</button>
+      <button data-act="go" data-arg="products">Sản phẩm</button>
+      <button data-act="go" data-arg="imports">Nhập hàng</button>
+      <button data-act="go" data-arg="prices">Giá bán</button>
+      <button data-act="go" data-arg="orders">Đơn đặt hàng</button>
+      <button data-act="go" data-arg="stock">Tồn kho</button>
+      <button data-act="adminLogout">Đăng xuất</button>
+    </aside>
+
+    <section id="main">
+
+      <!-- 1. Khách hàng -->
+      <section class="view" id="a-users">
+        <h2>Khách hàng</h2>
+        <table>
+          <thead><tr><th>Tài khoản</th><th>Họ tên</th><th>Địa chỉ</th><th>SĐT</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+          <tbody id="userRows"><template><tr>
+            <td data-bind="textContent:username"></td><td data-bind="textContent:fullname"></td>
+            <td data-bind="textContent:address"></td><td data-bind="textContent:phone"></td>
+            <td><span data-if="locked">Đã khóa</span><span data-ifnot="locked">Hoạt động</span></td>
+            <td><button data-act="resetPw" data-bind="data-arg:username">Reset mật khẩu</button>
+                <button data-act="lockUser" data-bind="data-arg:username"><span data-ifnot="locked">Khóa</span><span data-if="locked">Mở khóa</span></button></td>
+          </tr></template></tbody>
+        </table>
+      </section>
+
+      <!-- 2. Loại sản phẩm -->
+      <section class="view" id="a-types">
+        <h2>Loại sản phẩm</h2>
+        <form class="box row" data-submit="addType">
+          <input name="name" placeholder="Tên loại mới" required><button class="btn-small">+ Thêm loại</button>
+        </form>
+        <table>
+          <thead><tr><th>Tên loại (sửa rồi bấm Lưu)</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+          <tbody id="typeRows"><template><tr>
+            <td><form class="row-form" data-submit="saveType">
+              <input type="hidden" name="id" data-bind="value:id">
+              <input name="name" data-bind="value:name" required><button>Lưu</button></form></td>
+            <td><span data-if="hidden">Đang ẩn</span><span data-ifnot="hidden">Đang hiện</span></td>
+            <td><button data-act="hideType" data-bind="data-arg:id"><span data-if="hidden">Hiện</span><span data-ifnot="hidden">Ẩn</span></button>
+                <button data-act="delType" data-bind="data-arg:id">Xóa</button></td>
+          </tr></template></tbody>
+        </table>
+      </section>
+
+      <!-- 3. Sản phẩm -->
+      <section class="view" id="a-products">
+        <h2>Sản phẩm</h2>
+        <form class="box" id="prodForm" data-submit="saveProd">
+          <h3><span data-ifnot="editing">Thêm sản phẩm</span><span data-if="editing">Sửa sản phẩm</span></h3>
+          <label>Loại <select name="type" id="prodType" data-tpl="t-opt" data-bind="value:type"></select></label>
+          <label>Mã sản phẩm <input name="code" data-bind="value:code;readOnly:editing" required></label>
+          <label>Tên sản phẩm <input name="name" data-bind="value:name" required></label>
+          <label>Hình (đường dẫn ảnh, ví dụ images/n01.jpg) <input name="img" data-bind="value:img"></label>
+          <label>Mô tả <textarea name="desc" rows="3" data-bind="value:desc"></textarea></label>
+          <button class="btn-small">Lưu</button>
+          <button type="button" data-act="cancelEdit" data-if="editing">Hủy sửa</button>
+        </form>
+        <table>
+          <thead><tr><th>Mã</th><th>Tên</th><th>Loại</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+          <tbody id="prodRows"><template><tr>
+            <td data-bind="textContent:code"></td><td data-bind="textContent:name"></td>
+            <td data-bind="textContent:typeName"></td>
+            <td><span data-if="hidden">Đang ẩn</span><span data-ifnot="hidden">Đang bán</span></td>
+            <td><button data-act="editProd" data-bind="data-arg:code">Sửa</button>
+                <button data-act="hideProd" data-bind="data-arg:code"><span data-if="hidden">Hiện</span><span data-ifnot="hidden">Ẩn</span></button>
+                <button data-act="delProd" data-bind="data-arg:code">Xóa</button></td>
+          </tr></template></tbody>
+        </table>
+      </section>
+
+      <!-- 4. Nhập hàng: danh sách phiếu -->
+      <section class="view" id="a-imports">
+        <h2>Phiếu nhập hàng</h2>
+        <form class="box row" id="impFilter" data-submit="findImp">
+          Từ ngày <input type="date" name="from" data-bind="value:from"> đến <input type="date" name="to" data-bind="value:to">
+          <button class="btn-small">Tìm</button>
+          <button type="button" class="btn-small" data-act="newImport">+ Tạo phiếu nhập</button>
+        </form>
+        <table>
+          <thead><tr><th>Mã phiếu</th><th>Ngày nhập</th><th>Số dòng</th><th>Tổng tiền</th><th>Trạng thái</th><th></th></tr></thead>
+          <tbody id="impRows"><template><tr>
+            <td>#<span data-bind="textContent:id"></span></td><td data-bind="textContent:date"></td>
+            <td data-bind="textContent:lineCount"></td><td><span data-bind="textContent:total"></span>₫</td>
+            <td><span data-if="done">Đã hoàn thành</span><span data-ifnot="done">Đang soạn</span></td>
+            <td><button data-act="openImport" data-bind="data-arg:id"><span data-if="done">Xem</span><span data-ifnot="done">Sửa</span></button>
+                <button data-act="delImport" data-bind="data-arg:id" data-ifnot="done">Xóa</button></td>
+          </tr></template></tbody>
+        </table>
+      </section>
+
+      <!-- 4. Nhập hàng: chi tiết 1 phiếu -->
+      <section class="view" id="a-impdetail">
+        <h2>Phiếu nhập #<span data-bind="textContent:id"></span>
+          <span data-if="done">(đã hoàn thành)</span><span data-ifnot="done">(đang soạn)</span></h2>
+        <p>Ngày nhập: <input type="date" data-change="setImpDate" data-bind="value:date;disabled:done"></p>
+        <table>
+          <thead><tr><th>Sản phẩm</th><th>Giá nhập</th><th>Số lượng</th><th>Thành tiền</th><th></th></tr></thead>
+          <tbody id="lineRows"><template><tr>
+            <td><span data-bind="textContent:prodCode"></span> - <span data-bind="textContent:prodName"></span></td>
+            <td><span data-bind="textContent:cost"></span>₫</td>
+            <td data-bind="textContent:qty"></td><td><span data-bind="textContent:amount"></span>₫</td>
+            <td><button data-act="delLine" data-bind="data-arg:idx" data-ifnot="done">Xóa dòng</button></td>
+          </tr></template></tbody>
+        </table>
+        <form class="box row" data-submit="addLine" data-ifnot="done">
+          <select name="code" id="impProd" data-tpl="t-opt"></select>
+          <input name="cost" type="number" min="1" placeholder="Giá nhập" required>
+          <input name="qty" type="number" min="1" placeholder="Số lượng" required>
+          <button class="btn-small">+ Thêm dòng</button>
+        </form>
+        <button class="btn-small" data-act="finishImp" data-ifnot="done">Hoàn thành phiếu</button>
+        <div class="box" id="finishBox" hidden>
+          <p>Sau khi hoàn thành sẽ không sửa được phiếu nữa. Tiếp tục?</p>
+          <button class="btn-small" data-act="finishYes">Đồng ý</button>
+          <button data-act="finishNo">Hủy</button>
+        </div>
+        <button data-act="go" data-arg="imports">← Quay lại</button>
+      </section>
+
+      <!-- 5. Giá bán -->
+      <section class="view" id="a-prices">
+        <h2>Giá bán</h2>
+        <h3>% lợi nhuận mặc định theo loại</h3>
+        <table>
+          <thead><tr><th>Loại</th><th>% lợi nhuận (sửa rồi bấm Lưu)</th></tr></thead>
+          <tbody id="typeMarginRows"><template><tr>
+            <td data-bind="textContent:name"></td>
+            <td><form class="row-form" data-submit="saveTypeMargin">
+              <input type="hidden" name="id" data-bind="value:id">
+              <input type="number" name="margin" min="0" class="qty-input" data-bind="value:margin" required>%<button>Lưu</button></form></td>
+          </tr></template></tbody>
+        </table>
+        <h3>Giá vốn - lợi nhuận - giá bán theo sản phẩm</h3>
+        <form class="row" id="priceFilter" data-submit="findPrice">
+          <input name="q" placeholder="Tìm theo tên hoặc mã" data-bind="value:q"><button class="btn-small">Tra cứu</button>
+        </form>
+        <table>
+          <thead><tr><th>Mã</th><th>Tên</th><th>Loại</th><th>Giá vốn</th><th>% lợi nhuận áp dụng</th><th>Giá bán</th><th>% riêng của sản phẩm (trống = theo loại)</th></tr></thead>
+          <tbody id="priceRows"><template><tr>
+            <td data-bind="textContent:code"></td><td data-bind="textContent:name"></td><td data-bind="textContent:typeName"></td>
+            <td><span data-bind="textContent:cost"></span>₫</td>
+            <td><span data-bind="textContent:margin"></span>%<span data-ifnot="own"> (theo loại)</span></td>
+            <td><span data-bind="textContent:price"></span>₫</td>
+            <td><form class="row-form" data-submit="saveProdMargin">
+              <input type="hidden" name="code" data-bind="value:code">
+              <input type="number" name="margin" min="0" class="qty-input" data-bind="value:marginOwn">%<button>Lưu</button></form></td>
+          </tr></template></tbody>
+        </table>
+      </section>
+
+      <!-- 6. Đơn đặt hàng: danh sách -->
+      <section class="view" id="a-orders">
+        <h2>Đơn đặt hàng</h2>
+        <form class="box row" id="ordFilter" data-submit="findOrd">
+          Từ ngày <input type="date" name="from" data-bind="value:from"> đến <input type="date" name="to" data-bind="value:to">
+          <select name="st" id="ordStatus" data-bind="value:st">
+            <option value="">Mọi tình trạng</option>
+            <option value="new">Mới đặt</option>
+            <option value="processed">Đã xử lý</option>
+            <option value="delivered">Đã giao</option>
+            <option value="cancelled">Hủy</option>
+          </select>
+          <button class="btn-small">Tìm</button>
+        </form>
+        <table>
+          <thead><tr><th>Mã đơn</th><th>Ngày đặt</th><th>Khách</th><th>Tổng tiền</th><th>Tình trạng</th><th></th></tr></thead>
+          <tbody id="ordRows"><template><tr>
+            <td>#<span data-bind="textContent:id"></span></td><td data-bind="textContent:date"></td><td data-bind="textContent:user"></td>
+            <td><span data-bind="textContent:total"></span>₫</td><td data-bind="textContent:statusText"></td>
+            <td><button data-act="openOrder" data-bind="data-arg:id">Xem chi tiết</button></td>
+          </tr></template></tbody>
+        </table>
+      </section>
+
+      <!-- 6. Đơn đặt hàng: chi tiết + cập nhật tình trạng -->
+      <section class="view" id="a-orddetail">
+        <h2>Chi tiết đơn #<span data-bind="textContent:id"></span></h2>
+        <p>Khách hàng: <span data-bind="textContent:customerName"></span> (<span data-bind="textContent:customerPhone"></span>)</p>
+        <div id="ordBox" data-tpl="t-order"></div>
+        <p>Cập nhật tình trạng:
+          <select id="statusSel" data-bind="value:st">
+            <option value="new">Mới đặt</option>
+            <option value="processed">Đã xử lý</option>
+            <option value="delivered">Đã giao</option>
+            <option value="cancelled">Hủy</option>
+          </select>
+          <button class="btn-small" data-act="setStatus">Cập nhật</button>
+          <button data-act="go" data-arg="orders">← Quay lại</button></p>
+      </section>
+
+      <!-- 7. Tồn kho -->
+      <section class="view" id="a-stock">
+        <h2>Tồn kho</h2>
+        <form class="box row" data-submit="showStock">
+          <b>Tồn theo loại tại ngày</b> <input type="date" name="date" data-bind="value:today">
+          <select name="type" id="stockType" data-tpl="t-opt"><option value="">Tất cả loại</option></select>
+          <button class="btn-small">Xem</button>
+        </form>
+        <table>
+          <thead><tr><th>Mã</th><th>Tên</th><th>Loại</th><th>Tồn</th></tr></thead>
+          <tbody id="stockRows"><template><tr>
+            <td data-bind="textContent:code"></td><td data-bind="textContent:name"></td>
+            <td data-bind="textContent:typeName"></td><td data-bind="textContent:qty"></td>
+          </tr></template></tbody>
+        </table>
+
+        <form class="box row" data-submit="showLow">
+          <b>Cảnh báo sắp hết hàng</b> Tồn ≤ <input type="number" name="th" min="0" class="qty-input" data-bind="value:th">
+          <button class="btn-small">Kiểm tra</button>
+        </form>
+        <p data-bind="hidden:hasLow">Không có sản phẩm nào sắp hết hàng.</p>
+        <table>
+          <thead><tr><th>Mã</th><th>Tên</th><th>Tồn hiện tại</th><th></th></tr></thead>
+          <tbody id="lowRows"><template><tr>
+            <td data-bind="textContent:code"></td><td data-bind="textContent:name"></td>
+            <td data-bind="textContent:qty"></td><td>⚠ Sắp hết hàng</td>
+          </tr></template></tbody>
+        </table>
+
+        <form class="box row" data-submit="showFlow">
+          <b>Nhập - xuất - tồn</b>
+          <select name="code" id="flowProd" data-tpl="t-opt"></select>
+          Từ <input type="date" name="from" required> đến <input type="date" name="to" data-bind="value:today" required>
+          <button class="btn-small">Xem</button>
+        </form>
+        <table id="flowResult" data-bind="hidden:isHidden" hidden>
+          <thead><tr><th>Tồn đầu kỳ</th><th>Nhập</th><th>Xuất</th><th>Tồn cuối kỳ</th></tr></thead>
+          <tbody><tr>
+            <td data-bind="textContent:open"></td><td data-bind="textContent:inn"></td>
+            <td data-bind="textContent:out"></td><td data-bind="textContent:close"></td>
+          </tr></tbody>
+        </table>
+      </section>
+
+    </section>
+  </div>
+</div>
+
+<footer class="footer"><p>© 2026 Lumière. Đồ án website bán trang sức.</p></footer>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<div id="texts" hidden>
+  <p data-key="locked">Tài khoản của bạn đã bị khóa.</p>
+  <p data-key="noStock">Không đủ hàng trong kho.</p>
+  <p data-key="added">Đã thêm vào giỏ hàng.</p>
+  <p data-key="noAddr">Vui lòng nhập đủ địa chỉ giao hàng mới.</p>
+  <p data-key="orderNoStock">Có sản phẩm không đủ hàng.</p>
+  <p data-key="saved">Đã lưu thông tin.</p>
+  <p data-key="badPhone">Số điện thoại phải gồm đúng 10 chữ số.</p>
+  <p data-key="mismatch">Mật khẩu nhập lại chưa khớp.</p>
+  <p data-key="userExists">Tên đăng nhập đã tồn tại.</p>
+  <p data-key="regOk">Đăng ký thành công! Mời bạn đăng nhập.</p>
+  <p data-key="loginFail">Tên đăng nhập hoặc mật khẩu không đúng.</p>
+  <p data-key="loginLocked">Tài khoản đã bị khóa.</p>
+  <p data-key="adminFail">Sai tên đăng nhập hoặc mật khẩu.</p>
+  <p data-key="pwReset">Mật khẩu mới của {name} là: {pass}</p>
+  <p data-key="typeHasProd">Loại này đã có sản phẩm, hãy dùng nút Ẩn.</p>
+  <p data-key="needType">Hãy tạo loại sản phẩm trước.</p>
+  <p data-key="dupCode">Mã sản phẩm đã tồn tại.</p>
+  <p data-key="prodUsed">Sản phẩm đã có phiếu nhập hoặc đơn hàng, hãy dùng nút Ẩn.</p>
+  <p data-key="impEmpty">Phiếu chưa có dòng nào.</p>
+  <p data-key="badMargin">% lợi nhuận không hợp lệ.</p>
+</div>
+
+<template id="t-opt"><option data-bind="value:value;textContent:text"></option></template>
+
+<template id="t-order">
+  <div class="box">
+    <h3>Đơn #<span data-bind="textContent:id"></span> · <span data-bind="textContent:date"></span> · <span data-bind="textContent:statusText"></span></h3>
+    <table>
+      <thead><tr><th>Sản phẩm</th><th>Đơn giá</th><th>Số lượng</th><th>Thành tiền</th></tr></thead>
+      <tbody data-tpl="t-oitem" data-rows="items"></tbody>
+    </table>
+    <p>Giao đến: <span data-bind="textContent:addr"></span><br>
+       Thanh toán: <span data-bind="textContent:pay"></span><br>
+       <b>Tổng cộng: <span data-bind="textContent:totalFmt"></span>₫</b></p>
+  </div>
+</template>
+
+<template id="t-oitem"><tr>
+  <td data-bind="textContent:name"></td><td><span data-bind="textContent:priceFmt"></span>₫</td>
+  <td data-bind="textContent:qty"></td><td><span data-bind="textContent:amountFmt"></span>₫</td>
+</tr></template>
+
+<script src="app.js"></script>
+</body>
+</html>

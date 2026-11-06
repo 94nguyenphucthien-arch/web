@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lumière - Trang sức tinh tế</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-mode="shop" data-login="out" data-admin="out">
+<!-- ===================== HEADER + MENU ===================== -->
+<header class="header">
+  <a href="#home" class="logo">Lumière</a>
+  <button class="menu-btn" aria-label="Mở menu" data-act="toggleMenu">☰</button>
+  <nav class="nav" id="nav">
+    <!-- Menu của cửa hàng -->
+    <div class="nav-group" data-only="shop">
+      <a href="#home">Trang chủ</a>
+      <span class="nav-group" id="typeNav"><template><a data-bind="href:link;textContent:name"></a></template></span>
+      <a href="#search">Tìm kiếm</a>
+      <a href="#cart">Giỏ hàng (<span data-bind="textContent:cartCount">0</span>)</a>
+      <a href="#profile" data-only="user">👤 <span data-bind="textContent:userName"></span></a>
+      <a href="#orders" data-only="user">Đơn đã mua</a>
+      <a href="#" data-act="logout" data-only="user">Đăng xuất</a>
+      <a href="#" data-act="openAuth" class="btn-small" data-only="guest">Đăng nhập / Đăng ký</a>
+      <a class="btn-switch" href="admin.html">Quản trị</a>
+    </div>
+  </nav>
+</header>
+<!-- ===================== CỬA HÀNG ===================== -->
+<main class="section" id="app" data-only="shop">
+
+  <!-- Trang chủ -->
+  <section class="view on" id="v-home">
+    <section class="banner banner-small">
+      <div class="slide active s1"><div class="slide-text">
+        <h1>Ánh sáng nhỏ,<br>dấu ấn lớn</h1>
+        <p>Nhẫn, dây chuyền, bông tai bạc và vàng 18K.</p>
+      </div></div>
+    </section>
+    <h2 class="title-gap">Sản phẩm mới</h2>
+    <div class="products" id="homeGrid" data-tpl="t-card"></div>
+  </section>
+
+  <!-- Sản phẩm theo loại -->
+  <section class="view" id="v-list">
+    <h2 data-bind="textContent:title"></h2>
+    <div class="products" data-tpl="t-card"></div>
+    <p data-bind="hidden:hasItems" hidden>Không có sản phẩm.</p>
+    <div class="pager" data-tpl="t-page"></div>
+  </section>
+
+  <!-- Chi tiết sản phẩm -->
+  <section class="view" id="v-detail">
+    <div class="detail">
+      <div class="thumb"><span data-bind="hidden:hasImg">💍</span><img data-bind="src:img;alt:name;hidden:noImg"></div>
+      <div>
+        <h2 data-bind="textContent:name"></h2>
+        <p>Mã: <span data-bind="textContent:code"></span> · Loại: <span data-bind="textContent:typeName"></span></p>
+        <p class="price">
+          <span data-if="hasPrice"><span data-bind="textContent:price"></span>₫</span>
+          <span data-ifnot="hasPrice">Chưa có giá</span>
+        </p>
+        <p>Còn lại: <span data-bind="textContent:left"></span> sản phẩm</p>
+        <p data-bind="textContent:desc"></p>
+        <input id="dq" class="qty-input" type="number" min="1" value="1" aria-label="Số lượng">
+        <button class="btn-small" data-act="addDetail" data-bind="data-arg:code;disabled:cannotBuy">Thêm vào giỏ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tìm kiếm cơ bản (chỉ nhập tên) và nâng cao (thêm loại, khoảng giá) -->
+  <section class="view" id="v-search">
+    <h2>Tìm kiếm</h2>
+    <form class="filter" data-submit="doSearch">
+      <input name="name" placeholder="Tên sản phẩm" data-bind="value:name">
+      <select name="type" id="searchType" data-tpl="t-opt" data-bind="value:type"><option value="">Tất cả loại</option></select>
+      <input name="min" type="number" min="0" placeholder="Giá từ" data-bind="value:min">
+      <input name="max" type="number" min="0" placeholder="Giá đến" data-bind="value:max">
+      <button class="btn-small">Tìm</button>
+    </form>
+    <div class="products" data-tpl="t-card"></div>
+    <p data-bind="hidden:hasItems" hidden>Không có sản phẩm phù hợp.</p>
+    <div class="pager" data-tpl="t-page"></div>
+  </section>
+
+  <!-- Giỏ hàng -->
+  <section class="view" id="v-cart">
+    <h2>Giỏ hàng</h2>
+    <p data-bind="hidden:hasItems">Giỏ hàng trống.</p>
+    <div data-bind="hidden:isEmpty">
+      <table>
+        <thead><tr><th>Sản phẩm</th><th>Đơn giá</th><th>Số lượng</th><th>Thành tiền</th><th></th></tr></thead>
+        <tbody id="cartRows">
+          <template><tr>
+            <td data-bind="textContent:name"></td>
+            <td><span data-bind="textContent:price"></span>₫</td>
+            <td><button data-act="chg" data-d="-1" data-bind="data-arg:code">−</button>
+                <span data-bind="textContent:qty"></span>
+                <button data-act="chg" data-d="1" data-bind="data-arg:code">+</button></td>
+            <td><span data-bind="textContent:amount"></span>₫</td>
+            <td><button data-act="chg" data-d="-99" data-bind="data-arg:code">Xóa</button></td>
+          </tr></template>
+        </tbody>
+      </table>
+      <p><b>Tổng: <span data-bind="textContent:total"></span>₫</b></p>
+      <a class="btn-small" href="#checkout">Đặt hàng</a>
+    </div>
+  </section>
+
+  <!-- Thanh toán -->
+  <section class="view" id="v-checkout">
+    <h2>Thanh toán</h2>
+    <form class="box" id="checkoutForm" data-addr="old" data-submit="placeOrder">
+      <h3>Địa chỉ nhận hàng</h3>
+      <label><input type="radio" name="addr" value="old" checked data-change="addrMode"> Dùng địa chỉ tài khoản: <span data-bind="textContent:address"></span></label>
+      <label><input type="radio" name="addr" value="new" data-change="addrMode"> Nhập địa chỉ giao hàng mới</label>
+      <div id="newAddr">
+        <label>Số nhà, đường <input name="a1"></label>
+        <label>Quận / Huyện <input name="a2"></label>
+        <label>Tỉnh / Thành phố <input name="a3"></label>
+      </div>
+      <h3>Hình thức thanh toán</h3>
+      <label><input type="radio" name="pay" value="Tiền mặt khi nhận hàng" checked> Tiền mặt khi nhận hàng</label>
+      <label><input type="radio" name="pay" value="Chuyển khoản"> Chuyển khoản</label>
+      <label><input type="radio" name="pay" value="Thanh toán trực tuyến"> Thanh toán trực tuyến</label>
+      <button class="btn-small">Xác nhận đặt hàng</button>
+    </form>
+  </section>
+
+  <!-- Xem lại đơn vừa đặt -->
+  <section class="view" id="v-done">
+    <h2>Đặt hàng thành công!</h2>
+    <p>Mời bạn xem lại đơn hàng:</p>
+    <div id="doneOrder" data-tpl="t-order"></div>
+  </section>
+
+  <!-- Đơn đã mua -->
+  <section class="view" id="v-orders">
+    <h2>Đơn hàng đã mua</h2>
+    <p data-bind="hidden:hasItems">Bạn chưa có đơn hàng nào.</p>
+    <div id="orderList" data-tpl="t-order"></div>
+  </section>
+
+  <!-- Thông tin cá nhân -->
+  <section class="view" id="v-profile">
+    <h2>Thông tin cá nhân</h2>
+    <form class="box" id="profileForm" data-submit="saveProfile">
+      <label>Tên đăng nhập <input data-bind="value:username" disabled></label>
+      <label>Họ và tên <input name="fullname" data-bind="value:fullname" required></label>
+      <label>Địa chỉ <input name="address" data-bind="value:address" required></label>
+      <label>Số điện thoại <input name="phone" data-bind="value:phone" pattern="[0-9]{10}" title="Gồm 10 chữ số" required></label>
+      <label>Mật khẩu mới (bỏ trống nếu không đổi) <input name="password" type="password" data-bind="value:newpass"></label>
+      <button class="btn-small">Lưu thay đổi</button>
+    </form>
+  </section>
+</main>
+
+<footer class="footer"><p>© 2026 Lumière. Đồ án website bán trang sức.</p></footer>
+
+<!-- ===================== HỘP ĐĂNG NHẬP / ĐĂNG KÝ (1 nút mở, 2 tab) ===================== -->
+<div class="auth-overlay" id="authBox" data-tab="login">
+  <section class="auth-modal" role="dialog" aria-modal="true">
+    <button class="auth-close" type="button" aria-label="Đóng" data-act="closeAuth">×</button>
+    <p class="auth-eyebrow">LUMIÈRE JEWELRY</p>
+    <h2>Tài khoản</h2>
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab" id="tabLogin" data-act="authTab" data-arg="login">Đăng nhập</button>
+      <button type="button" class="auth-tab" id="tabReg" data-act="authTab" data-arg="register">Đăng ký</button>
+    </div>
+
+    <form id="loginForm" class="auth-form" data-submit="login">
+      <div class="auth-field"><label>Tên đăng nhập</label><input name="username" required></div>
+      <div class="auth-field"><label>Mật khẩu</label><input name="password" type="password" required></div>
+      <button class="auth-submit" type="submit">Đăng nhập <span>→</span></button>
+    </form>
+
+    <form id="regForm" class="auth-form" data-submit="register">
+      <div class="auth-field"><label>Họ và tên</label><input name="fullname" required></div>
+      <div class="auth-field"><label>Địa chỉ</label><input name="address" required></div>
+      <div class="auth-field"><label>Số điện thoại</label><input name="phone" inputmode="numeric" pattern="[0-9]{10}" title="Gồm 10 chữ số" placeholder="10 chữ số" required></div>
+      <div class="auth-field"><label>Tên đăng nhập</label><input name="username" required></div>
+      <div class="auth-field"><label>Mật khẩu</label><input name="password" type="password" required></div>
+      <div class="auth-field"><label>Nhập lại mật khẩu</label><input name="again" type="password" required></div>
+      <button class="auth-submit" type="submit">Tạo tài khoản <span>→</span></button>
+    </form>
+    <p class="auth-message" id="authMsg" role="status"></p>
+  </section>
+</div>
+
+<!-- Thông báo nổi (JS chỉ điền chữ lấy từ khối #texts bên dưới) -->
+<div class="toast" id="toast" role="status" hidden></div>
+
+<!-- Thông báo được lưu ở HTML để có thể sửa nội dung mà không cần sửa JavaScript. -->
+<div id="texts" hidden>
+  <p data-key="locked">Tài khoản của bạn đã bị khóa.</p>
+  <p data-key="noStock">Không đủ hàng trong kho.</p>
+  <p data-key="added">Đã thêm vào giỏ hàng.</p>
+  <p data-key="noAddr">Vui lòng nhập đủ địa chỉ giao hàng mới.</p>
+  <p data-key="orderNoStock">Có sản phẩm không đủ hàng.</p>
+  <p data-key="saved">Đã lưu thông tin.</p>
+  <p data-key="badPhone">Số điện thoại phải gồm đúng 10 chữ số.</p>
+  <p data-key="mismatch">Mật khẩu nhập lại chưa khớp.</p>
+  <p data-key="userExists">Tên đăng nhập đã tồn tại.</p>
+  <p data-key="regOk">Đăng ký thành công! Mời bạn đăng nhập.</p>
+  <p data-key="loginFail">Tên đăng nhập hoặc mật khẩu không đúng.</p>
+  <p data-key="loginLocked">Tài khoản đã bị khóa.</p>
+  <p data-key="adminFail">Sai tên đăng nhập hoặc mật khẩu.</p>
+  <p data-key="pwReset">Mật khẩu mới của {name} là: {pass}</p>
+  <p data-key="typeHasProd">Loại này đã có sản phẩm, hãy dùng nút Ẩn.</p>
+  <p data-key="needType">Hãy tạo loại sản phẩm trước.</p>
+  <p data-key="dupCode">Mã sản phẩm đã tồn tại.</p>
+  <p data-key="prodUsed">Sản phẩm đã có phiếu nhập hoặc đơn hàng, hãy dùng nút Ẩn.</p>
+  <p data-key="impEmpty">Phiếu chưa có dòng nào.</p>
+  <p data-key="badMargin">% lợi nhuận không hợp lệ.</p>
+</div>
+
+<!-- Thẻ sản phẩm -->
+<template id="t-card">
+  <div class="card">
+    <a data-bind="href:link"><div class="thumb"><span data-bind="hidden:hasImg">💍</span><img data-bind="src:img;alt:name;hidden:noImg"></div></a>
+    <div class="card-body">
+      <h3 data-bind="textContent:name"></h3>
+      <p class="price">
+        <span data-if="hasPrice"><span data-bind="textContent:price"></span>₫</span>
+        <span data-ifnot="hasPrice">Chưa có giá</span>
+      </p>
+      <button class="add" data-act="addCart" data-ifnot="soldOut" data-bind="data-arg:code;disabled:cannotBuy">Thêm vào giỏ</button>
+      <button class="add" data-if="soldOut" disabled>Hết hàng</button>
+    </div>
+  </div>
+</template>
+<!-- Nút số trang -->
+<template id="t-page"><a data-bind="href:link;textContent:n;class:cls"></a></template>
+<!-- Một lựa chọn trong ô <select> -->
+<template id="t-opt"><option data-bind="value:value;textContent:text"></option></template>
+<!-- Khung 1 đơn hàng (dùng cho khách và admin) -->
+<template id="t-order">
+  <div class="box">
+    <h3>Đơn #<span data-bind="textContent:id"></span> · <span data-bind="textContent:date"></span> · <span data-bind="textContent:statusText"></span></h3>
+    <table>
+      <thead><tr><th>Sản phẩm</th><th>Đơn giá</th><th>Số lượng</th><th>Thành tiền</th></tr></thead>
+      <tbody data-tpl="t-oitem" data-rows="items"></tbody>
+    </table>
+    <p>Giao đến: <span data-bind="textContent:addr"></span><br>
+       Thanh toán: <span data-bind="textContent:pay"></span><br>
+       <b>Tổng cộng: <span data-bind="textContent:totalFmt"></span>₫</b></p>
+  </div>
+</template>
+<template id="t-oitem"><tr>
+  <td data-bind="textContent:name"></td><td><span data-bind="textContent:priceFmt"></span>₫</td>
+  <td data-bind="textContent:qty"></td><td><span data-bind="textContent:amountFmt"></span>₫</td>
+</tr></template>
+
+<!-- Tất cả logic ứng dụng được gộp trong một file; đặt cuối body để HTML sẵn sàng trước khi chạy. -->
+<script src="app.js"></script>
+</body>
+</html>
